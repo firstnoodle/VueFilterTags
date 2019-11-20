@@ -8,7 +8,7 @@
 #### Current status
 
 - [x] highlight letters that matches filter query
-- [x] highligt using arrow keys
+- [x] highligt using arrow keys
 - [x] caseinsensitive
 - [ ] REFACTOR - the element-ui structure is not needed. Pass options as prop on eeSelect instead of via slot!!
 - [ ] select option
