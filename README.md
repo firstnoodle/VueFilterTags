@@ -9,6 +9,7 @@ There will be individual components for each type:
 2 dependencies will be used:
 - popper.js for positioning dropdowns
 - vue-perfect-scrollbar for adding scrollbars
+– vue-lottie for showing loader animation
 
 #### 3 different modes:
 1. Button
