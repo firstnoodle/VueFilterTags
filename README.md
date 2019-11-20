@@ -1,12 +1,12 @@
 # Resizable select for a filterOperator ui component
 
-UI components for sorting, filtering and paginating datasets. Screenshot will follow.
+#### UI components for sorting, filtering and paginating datasets. Screenshot will follow.
 There will be individual components for each type:
 - sortingComponent
 - filterComponent
 – paginationComponent 
 
-2 dependencies will be used:
+#### 2 dependencies will be used:
 - popper.js for positioning dropdowns
 - vue-perfect-scrollbar for adding scrollbars
 – vue-lottie for showing loader animation
