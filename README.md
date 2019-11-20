@@ -1,6 +1,6 @@
-# Resizable select for a filterOperator ui component
 
-#### UI components for sorting, filtering and paginating datasets. Screenshot will follow.
+# UI components for sorting, filtering and paginating datasets. 
+Screenshot will follow.
 There will be individual components for each type:
 - sortingComponent
 - filterComponent
