@@ -11,6 +11,11 @@ There will be individual components for each type:
 - vue-perfect-scrollbar for adding scrollbars
 – vue-lottie for showing loader animation
 
+## The Filter Component
+Both the sorting and filter components will be using a select/dropdown for selecting columns (and operator for the filter).
+The select will in turn consist of a resizable input (or a button depending on mode) and a popper for the options (which will be wrapped in a perfect-scrollbar)
+The options passed to the select should define a template ...
+
 #### 3 different modes:
 1. Button
 2. Filter - filter content
@@ -21,11 +26,11 @@ There will be individual components for each type:
 - [x] highlight letters that matches filter query
 - [x] highligt using arrow keys
 - [x] caseinsensitive
+- [ ] handle popper
 - [ ] REFACTOR - the element-ui structure is not needed. Pass options as prop on eeSelect instead of via slot!!
 - [ ] select option
 - [ ] highlight selected option
 - [ ] when there are no options
-- [ ] handle popper
 - [ ] handle remote
 - [ ] eeLoader
 - [ ] handle button
