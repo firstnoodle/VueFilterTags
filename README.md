@@ -26,11 +26,12 @@ The options passed to the select should define a template ...
 - [x] highlight letters that matches filter query
 - [x] highligt using arrow keys
 - [x] caseinsensitive
-- [ ] handle popper
-- [ ] REFACTOR - the element-ui structure is not needed. Pass options as prop on eeSelect instead of via slot!!
-- [ ] select option
+- [x] handle popper
+- [x] select option
+- [ ] create top-level component click/focus (controlling input focus/blur)
 - [ ] highlight selected option
 - [ ] when there are no options
 - [ ] handle remote
 - [ ] eeLoader
 - [ ] handle button
+- [ ] REFACTOR - the element-ui structure is not needed. Pass options as prop on eeSelect instead of via slot!!

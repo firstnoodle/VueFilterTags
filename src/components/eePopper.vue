@@ -1,16 +1,16 @@
 <template>
   <span>
+    <slot name="reference"></slot>
     <transition
       :name="transition"
       :enter-active-class="enterActiveClass"
       :leave-active-class="leaveActiveClass"
       @after-leave="doDestroy"
     >
-      <span ref="popper" v-show="!disabled && showPopper">
-        <slot>{{ content }}</slot>
+      <span ref="popper" v-show="showPopper">
+        <slot />
       </span>
     </transition>
-    <slot name="reference"></slot>
   </span>
 </template>
 
@@ -35,35 +35,16 @@ function off(element, event, handler) {
 
 export default {
   props: {
-    trigger: {
-      type: String,
-      default: "click",
-      validator: value => ["click", "hover"].indexOf(value) > -1
-    },
-    delayOnMouseOver: {
-      type: Number,
-      default: 10
-    },
-    delayOnMouseOut: {
-      type: Number,
-      default: 10
-    },
-    disabled: {
-      type: Boolean,
-      default: false
-    },
-    content: String,
     enterActiveClass: String,
     leaveActiveClass: String,
     boundariesSelector: String,
-    reference: {},
-    forceShow: {
-      type: Boolean,
-      default: false
-    },
     appendToBody: {
       type: Boolean,
       default: false
+    },
+    showPopper: {
+      type: Boolean,
+      default: false,
     },
     transition: {
       type: String,
@@ -91,7 +72,6 @@ export default {
     return {
       referenceElm: null,
       popperJS: null,
-      showPopper: false,
       currentPlacement: "",
       popperOptions: {
         placement: "bottom-start",
@@ -105,17 +85,12 @@ export default {
       if (value) {
         this.$emit("show");
         this.updatePopper();
+        on(document, "click", this.handleDocumentClick);
       } else {
         this.$emit("hide");
+        off(document, "click", this.handleDocumentClick);
       }
     },
-
-    forceShow: {
-      handler(value) {
-        this[value ? "doShow" : "doClose"]();
-      },
-      immediate: true
-    }
   },
 
   created() {
@@ -124,34 +99,12 @@ export default {
   },
 
   mounted() {
-    this.referenceElm = this.reference || this.$slots.reference[0].elm;
+    this.referenceElm = this.$slots.reference[0].elm;
     this.popper = this.$slots.default[0].elm;
-
-    switch (this.trigger) {
-      case "click":
-        on(this.referenceElm, "click", this.doToggle);
-        on(document, "click", this.handleDocumentClick);
-        break;
-      case "hover":
-        on(this.referenceElm, "mouseover", this.onMouseOver);
-        on(this.popper, "mouseover", this.onMouseOver);
-        on(this.referenceElm, "mouseout", this.onMouseOut);
-        on(this.popper, "mouseout", this.onMouseOut);
-        break;
-      default:
-        break;
-    }
+    on(document, "click", this.handleDocumentClick);
   },
 
   methods: {
-    doToggle() {
-      if (!this.forceShow) {
-        this.showPopper = !this.showPopper;
-      }
-    },
-    doShow() {
-      this.showPopper = true;
-    },
     doClose() {
       this.showPopper = false;
     },
@@ -209,31 +162,11 @@ export default {
       });
     },
     destroyPopper() {
-      off(this.referenceElm, "click", this.doToggle);
-      off(this.referenceElm, "mouseup", this.doClose);
-      off(this.referenceElm, "mousedown", this.doShow);
-      off(this.referenceElm, "focus", this.doShow);
-      off(this.referenceElm, "blur", this.doClose);
-      off(this.referenceElm, "mouseout", this.onMouseOut);
-      off(this.referenceElm, "mouseover", this.onMouseOver);
       off(document, "click", this.handleDocumentClick);
-      this.showPopper = false;
       this.doDestroy();
     },
     updatePopper() {
       this.popperJS ? this.popperJS.scheduleUpdate() : this.createPopper();
-    },
-    onMouseOver() {
-      clearTimeout(this._timer);
-      this._timer = setTimeout(() => {
-        this.showPopper = true;
-      }, this.delayOnMouseOver);
-    },
-    onMouseOut() {
-      clearTimeout(this._timer);
-      this._timer = setTimeout(() => {
-        this.showPopper = false;
-      }, this.delayOnMouseOut);
     },
     handleDocumentClick(e) {
       if (
@@ -247,12 +180,7 @@ export default {
         return;
       }
       this.$emit("documentClick");
-      if (this.forceShow) {
-        return;
-      }
-      this.showPopper = false;
     },
-
     elementContains(elm, otherElm) {
       if (typeof elm.contains === "function") {
         return elm.contains(otherElm);

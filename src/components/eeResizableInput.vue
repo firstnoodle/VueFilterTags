@@ -2,20 +2,22 @@
   <div
     class="ee-resizable-input"
     :class="{ 'is-focussed' : inputFocus }"
-    @click="$refs.input.focus()"
+    @click="onClick"
   >
     <span ref="inputGhost">{{value}}</span>
     <span ref="placeholderGhost">{{placeholder}}</span>
+
     <input
-      :value="value"
-      type="text"
       ref="input"
-      :style="computedStyle"
-      :placeholder="placeholder"
+      type="text"
       spellcheck="false"
-      @input="onInput"
-      @focus="onInputFocus"
+      :value="value"
+      :placeholder="placeholder"
+      :readonly="readonly"
+      :style="computedStyle"
       @blur="onInputBlur"
+      @focus="onInputFocus"
+      @input="onInput"
     >
   </div>
 </template>
@@ -37,7 +39,8 @@ export default {
     return {
       inputWidth: 0,
       inputFocus: false,
-      placeHolderWidth: 0
+      placeHolderWidth: 0,
+      readonly: true
     };
   },
   computed: {
@@ -53,8 +56,7 @@ export default {
         this.inputWidth = !this.value.length
           ? this.placeHolderWidth
           : this.$refs.inputGhost.getBoundingClientRect().width;
-
-        this.$emit("change", this.value);
+        this.placeHolderWidth = this.inputWidth;
       });
     }
   },
@@ -63,15 +65,27 @@ export default {
     this.placeHolderWidth = this.$refs.placeholderGhost.getBoundingClientRect().width;
   },
   methods: {
+    doBlur() {
+      this.readonly = true;
+    },
+
+    onClick() {
+      this.$emit("click");
+      this.$refs.input.focus()
+    },
+
     onInput(event) {
       this.$emit("change", event.target.value);
     },
+
     onInputFocus() {
       this.$emit("focus");
+      this.readonly = false;
       this.inputFocus = true;
     },
+
     onInputBlur() {
-      this.$emit("blur");
+      this.readonly = true;
       this.inputFocus = false;
     }
   }
@@ -89,6 +103,7 @@ $font-size: 12px;
   font-size: $font-size;
   padding: 2px 4px;
   position: relative;
+  white-space: pre;
 
   & > input {
     background-color: #ddd;
@@ -102,6 +117,9 @@ $font-size: 12px;
       color: #000;
       outline: none;
     }
+    &:hover {
+      cursor: pointer;
+    }
   }
 
   & > span {
@@ -114,7 +132,7 @@ $font-size: 12px;
 
   &:hover {
     background-color: #ccc;
-    cursor: text;
+    cursor: pointer;
 
     & > input {
       background-color: #ccc;

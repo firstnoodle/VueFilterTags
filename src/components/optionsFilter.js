@@ -68,23 +68,13 @@ export default {
           }
         ];
     },
-    onOptionMouseOver(event) {
-      const options = this.$el.children;
-      let index = 0;
-      for(const option of options) {
-        if(option === event.target) {
-          this.highlightedOption = index;
-        }
-        index++;
+    
+    selectHighlighted() {
+      if(this.highlightedOption !== null) {
+        this.$parent.$parent.$parent.$emit('click', this.filteredVNodes[this.highlightedOption].componentOptions.propsData);
       }
     },
-    onSelect(event, data) {
-      console.log(event, data);  
-      // this.$parent.$parent.$parent.$emit('click', node.componentOptions.propsData)
-    },
-    selectHighlighted() {
-      console.log(this.filteredVNodes[this.highlightedOption].componentOptions.propsData.label);
-    },
+
     updateHighlight(direction) {
       if(this.highlightedOption === null) {
         this.highlightedOption = direction === 1 ? 0 : this.optionCount-1;
@@ -103,7 +93,7 @@ export default {
 
         // highlight search match 
         const stringSegments = this.markStringMatch(node.componentOptions.propsData.label, this.value);
-        const stringNodes = stringSegments.map(item => {
+        const stringNodes = stringSegments.map((item,index) => {
           if(item.value.length) {
             return createElement(
               'span',
@@ -124,8 +114,12 @@ export default {
             'is-highlighted': index === this.highlightedOption
           },
           on: {
-            mouseover: this.onOptionMouseOver,
-            click: this.onSelect
+            mouseover: event => {
+              this.highlightedOption = index;
+            },
+            click: event => {
+              this.$parent.$parent.$parent.$emit('click', node.componentOptions.propsData);
+            }
           }
         },
         stringNodes

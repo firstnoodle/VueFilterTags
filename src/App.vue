@@ -23,7 +23,6 @@ export default {
   },
   data() {
     return {
-      inputValue: "test",
       selectedOption: null,
       options: [
         { label: "Copenhagen" },
@@ -35,17 +34,14 @@ export default {
         { label: "Budapest" },
         { label: "Nairobi" },
         { label: "Beijing" },
-        { label: "Buenos Aires" }
-      ]
+        { label: "Buenos Aires" },
+        { label: "Some long cityname" },
+      ],
     };
   },
   methods: {
-    onInputChange(value) {
-      this.inputValue = value;
-    },
     onSelect(option) {
-      console.log(option);
-      this.selectedOption = option;
+      this.selectedOption = option.value;
     }
   }
 };

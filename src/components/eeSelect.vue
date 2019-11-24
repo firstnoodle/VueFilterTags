@@ -1,6 +1,7 @@
 <template>
-  <div class="ee-select">
-    <ee-popper ref="popper" @show="popperActive = true" @hide="popperActive = false">
+  <div class="ee-select" @keydown.enter.prevent="onEnter">
+    <ee-popper ref="popper" :showPopper="showPopper" @documentClick="onDocumentClick">
+
       <div class="popper ee-select__dropdown">
         <!-- ee-loader :loading="" -->
         <perfect-scrollbar class="scroll-container" ref="scrollContainer">
@@ -17,14 +18,15 @@
         class="ee-select__button"
         @keydown.arrow-up.prevent="$emit('highlight', -1)"
         @keydown.arrow-down.prevent="$emit('highlight', 1)"
-        @keydown.enter.prevent="$emit('selectHighlighted')"
       >
         <div v-if="type === 'button'">Button</div>
         <ee-resizable-input
           v-else
+          ref="input"
           :value="inputValue"
-          placeholder="Select.."
+          :placeholder="inputPlaceholder"
           @change="onInputChange"
+          @click="onInputClick"
           @focus="onInputFocus"
           @blur="onInputBlur"
         />
@@ -40,6 +42,11 @@ import optionsFilter from "./optionsFilter.js";
 
 export default {
   name: "eeSelect",
+  components: {
+    eePopper,
+    eeResizableInput,
+    optionsFilter
+  },
   props: {
     type: {
       type: String,
@@ -54,24 +61,51 @@ export default {
       default: null
     }
   },
-  components: {
-    eePopper,
-    eeResizableInput,
-    optionsFilter
-  },
+
   data() {
     return {
+      inputPlaceholder: 'Type..',
       inputValue: "test",
-      popperActive: false
+      showPopper: true,
     };
   },
+
+  watch: {
+    value(newValue, oldValue) {
+      this.inputValue = newValue.label;
+      this.inputPlaceholder = newValue.label;
+      this.$refs.input.doBlur();
+    }
+  },
+
   mounted() {
     this.$on("click", option => {
-      console.log('yoyoyoy');
+      this.showPopper = false;
       this.$emit("select", option);
     });
+
+    // this.$on("selectHighlighted", () => {
+    //   if(!this.showPopper) this.showPopper = true;
+    // });
   },
   methods: {
+    onEnter() {
+      if(this.showPopper) {
+        this.$emit('selectHighlighted');
+      } else {
+        this.inputValue = '';
+        this.showPopper = true; 
+        // this.$refs.input.onClick();
+      }
+    },
+    onDocumentClick() {
+      if(this.value) {
+        this.inputValue = this.value.label;
+      } else {
+        this.inputValue = ''; 
+      }
+      this.showPopper = false;
+    },
     onHighlightChange(index) {
       if(this.$refs.scrollContent.$el.childNodes.length) {
         const containerHeight = this.$refs.scrollContainer.$el.getBoundingClientRect().height;
@@ -93,14 +127,17 @@ export default {
     },
     onInputChange(value) {
       this.inputValue = value;
+      // options-filter is listening
       this.$emit("inputChange", value);
     },
-    onInputFocus(value) {
-      console.log("focus");
+    onInputClick() {
+      console.log('click');
     },
-    onInputBlur(value) {
-      console.log("blur");
-    }
+    onInputFocus(value) {
+      console.log('focus');
+      this.inputValue = '';
+      this.showPopper = true;
+    },
   }
 };
 </script>
@@ -109,6 +146,10 @@ export default {
 <style lang="scss">
 .ee-select {
   box-sizing: border-box;
+
+  &:focus {
+    border: 1px solid red;
+  }
 
   &__dropdown {
     background-color: #FFF;
